@@ -1,0 +1,41 @@
+Fun with context
+in Go 1.7
+13 Sep 2016
+Tags: context
+
+Roberto Bampi
+Master Student, KTH 
+Devops, SpazioDati
+bampi.roberto@gmail.com
+@gigaroby
+
+* Video
+
+This talk was presented at the [[http://applicative.acm.org/][ACM Applicative]] conference in New York City on June 1, 2016.
+
+.link https://www.youtube.com/watch?v=5bYO60-qYOI Watch the talk on YouTube
+
+* Outline
+
+1. What is Go, and who uses it?
+2. Comparing Go and other languages
+3. Code examples
+4. Concurrency
+5. Getting started
+
+* What is Go?
+
+"Go is an open source programming language that makes it easy to build simple, reliable, and efficient software."
+
+.link http://golang.org
+
+* History
+
+Design began in late 2007.
+
+- Robert Griesemer, Rob Pike, and Ken Thompson.
+- Ian Lance Taylor and Russ Cox.
+
+Open source since 2009 with a very active community.
+
+Language stable as of Go 1, early 2012.
