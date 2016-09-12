@@ -13,10 +13,11 @@ bampi.roberto@gmail.com
 
 1. History
 2. What context is
-3. Deadline and cancellation
-4. Request-scoped data
-5. Type safe access
-6. Q/A (hopefully)
+3. When to use it
+4. Deadline and cancellation
+5. Request-scoped data
+6. Type safe access
+7. Q/(A hopefully)
 
 * Some history
 
@@ -28,6 +29,7 @@ July 2014
 August 2016 (Go 1.7)
 
 - Context integrated into the standard library as top level package `"context"`
+- Also integrated in some standard library packages (I'll talk about this later)
 - `Request.WithContext(ctx)` and `Request.Context()` in `net/http` 
 - `CommandContext(ctx,name,args)` in `os/exec`
 
@@ -69,6 +71,7 @@ Heavy use inside Google
         }
     }
 
+    // or context.WithDeadline(context.Background(), time.Now().Add(100 * time.Millisecond))
     ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
     // if FetchThing finishes early, release the context resources
     defer cancel()
