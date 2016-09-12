@@ -5,37 +5,79 @@ Tags: context
 
 Roberto Bampi
 Master Student, KTH 
-Devops, SpazioDati
+Infrastructure Developer, SpazioDati
 bampi.roberto@gmail.com
 @gigaroby
 
-* Video
-
-This talk was presented at the [[http://applicative.acm.org/][ACM Applicative]] conference in New York City on June 1, 2016.
-
-.link https://www.youtube.com/watch?v=5bYO60-qYOI Watch the talk on YouTube
-
 * Outline
 
-1. What is Go, and who uses it?
-2. Comparing Go and other languages
-3. Code examples
-4. Concurrency
-5. Getting started
+1. History
+2. What context is
+3. Deadline and cancellation
+4. Request-scoped data
+5. Type safe access
+6. Q/A (hopefully)
 
-* What is Go?
+* Some history
 
-"Go is an open source programming language that makes it easy to build simple, reliable, and efficient software."
+July 2014
 
-.link http://golang.org
+- [[https://blog.golang.org/context][Go Concurrency Patterns: Context]]
+- Context was open-sourced as golang.org/x/net/context
 
-* History
+August 2016 (Go 1.7)
 
-Design began in late 2007.
+- Context integrated into the standard library as top level package `"context"`
+- `Request.WithContext(ctx)` and `Request.Context()` in `net/http` 
+- `CommandContext(ctx,name,args)` in `os/exec`
 
-- Robert Griesemer, Rob Pike, and Ken Thompson.
-- Ian Lance Taylor and Russ Cox.
+* Let's talk context
 
-Open source since 2009 with a very active community.
+    type Context interface {
+        // cancellation and deadline
+        Deadline() (deadline time.Time, ok bool)
+        Done() <-chan struct{}
+        Err() error
 
-Language stable as of Go 1, early 2012.
+        // request scoped data
+        Value(key interface{}) interface{}
+    }
+
+Move request-scoped data, cancellation and deadlines between API boundaries.
+
+Hierachial structure, new contexts are children of a given context.
+
+Heavy use inside Google
+
+    At Google, we require that Go programmers pass a Context parameter as the first argument
+    to every function on the call path between incoming and outgoing requests
+
+* Deadline and cancellation
+
+    func FetchThing(ctx context.Context) (*Thing, err) {
+        var (
+            res = make(chan *Thing, 1)
+            f = fetcher{}
+        )
+        go func() { res <- f.fetch() }()
+        select {
+            case <- ctx.Done():
+                f.cancelTransaction()
+                return nil, ctx.Err()
+            case t := <- res:
+                return t, nil
+        }
+    }
+
+    ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+    // if FetchThing finishes early, release the context resources
+    defer cancel()
+
+    if t, err := FetchThing(ctx); err != nil {
+        ...
+    }
+
+
+* Request-scoped data
+
+
